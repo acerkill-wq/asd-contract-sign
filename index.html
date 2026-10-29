@@ -93,6 +93,7 @@ button{font:inherit;font-weight:700;border:0;border-radius:10px;padding:13px 18p
     <div class="big">✅</div>
     <h2 id="doneT">Договор подписан</h2>
     <p id="doneP" class="sub"></p>
+    <button class="pri" id="dl" type="button">⬇ Скачать договор (PDF)</button>
   </div>
   <div class="foot">Академия Сметного Дела · подписание договоров онлайн</div>
 </div>
@@ -108,7 +109,15 @@ button{font:inherit;font-weight:700;border:0;border-radius:10px;padding:13px 18p
   var API = window.APP_CFG.API_URL;
   if (Q.get('api') && /^(localhost|127\.0\.0\.1)$/.test(location.hostname)) API = Q.get('api'); // только для локальных тестов
   var token = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random();
-  var data = null, busy = false;
+  var data = null, busy = false, pdfData = null;
+  function download() {
+    if (!pdfData) return;
+    var bin = atob(pdfData.b), arr = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([arr], { type: 'application/pdf' })); a.download = pdfData.n;
+    document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
+  }
+  $('dl').onclick = download;
 
   // тарифы + предзаполнение из ссылки (?tariff=pro&order=55251632&email=..&fio=..)
   var sel = $('tariff');
@@ -213,6 +222,9 @@ button{font:inherit;font-weight:700;border:0;border-radius:10px;padding:13px 18p
       if (!r.ok) throw new Error(r.msg || 'Не удалось подписать договор.');
       $('doneT').textContent = r.dup ? 'Договор уже был подписан' : 'Договор подписан';
       $('doneP').textContent = (r.dup ? 'Мы повторно отправили копию на ' : 'Подписанный договор №' + r.number + ' отправлен на ') + data.email + '. Если письма нет — проверьте «Спам». Приступайте к обучению: договор уже у документоведа.';
+      pdfData = r.pdf ? { b: r.pdf, n: r.fileName || ('Договор_' + r.number.replace('/', '-') + '.pdf') } : null;
+      $('dl').classList.toggle('hide', !pdfData);
+      if (pdfData) download();
       step(4);
     }).catch(function (e) { show('e3', e.message); lock(b, false, 'Подписать договор'); });
   };
