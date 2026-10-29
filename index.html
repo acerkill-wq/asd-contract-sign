@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Подписание договора</title>
+<style>
+:root{--bg:#f4f7fc;--card:#fff;--ink:#0d1b3d;--mut:#5b6785;--line:#d8e0f0;--blue:#0b5cff;--blue-d:#0847c4;--err:#c62828;--ok:#1b8a4b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 -apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:14px}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:18px;margin:0 0 10px}
+.sub{color:var(--mut);margin:0 0 14px}
+.steps{display:flex;gap:6px;margin-bottom:14px}.steps span{flex:1;height:5px;border-radius:3px;background:var(--line)}.steps span.on{background:var(--blue)}
+label{display:block;font-weight:600;font-size:14px;margin:12px 0 4px}
+.hint{font-weight:400;color:var(--mut);font-size:13px}
+input,select,textarea{width:100%;padding:11px 12px;font:inherit;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+input:focus,select:focus{outline:2px solid #b9d0ff;border-color:var(--blue)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:560px){.row{grid-template-columns:1fr}}
+.bad{border-color:var(--err)!important}.errt{color:var(--err);font-size:13px;margin-top:3px;min-height:0}
+button{font:inherit;font-weight:700;border:0;border-radius:10px;padding:13px 18px;cursor:pointer}
+.pri{background:var(--blue);color:#fff;width:100%;margin-top:16px}.pri:hover{background:var(--blue-d)}.pri[disabled]{background:#9db5e8;cursor:default}
+.sec{background:#e8eefb;color:var(--blue)}
+.contract{max-height:340px;overflow:auto;border:1px solid var(--line);border-radius:9px;padding:12px;background:#fcfdff;font:13px/1.4 "Times New Roman",serif}
+.contract h1{font-size:15px;text-align:center}.contract h2{font-size:13px;text-align:center;margin:10px 0 3px}.contract p{margin:0 0 4px;text-align:justify}
+.contract table{width:100%;border-collapse:collapse}.contract td,.contract th{vertical-align:top;padding:3px;font-size:12px}.contract .bd td,.contract .bd th{border:1px solid #999}
+.contract .esign,.contract .sig img,.contract img{max-height:40px}.contract .r{text-align:right}.contract .c{text-align:center}
+#pad{width:100%;height:170px;border:2px dashed #9db5e8;border-radius:10px;background:#fff;touch-action:none;display:block}
+.chk{display:flex;gap:10px;align-items:flex-start;margin:12px 0;font-size:15px}.chk input{width:20px;height:20px;margin-top:2px;flex:none}
+.msg{padding:11px 13px;border-radius:9px;margin-top:12px;font-size:15px}.msg.err{background:#fdecec;color:var(--err)}.msg.ok{background:#e6f6ec;color:var(--ok)}.msg.info{background:#eaf1ff;color:var(--blue-d)}
+.hide{display:none}.big{font-size:44px;line-height:1}
+.code{letter-spacing:8px;text-align:center;font-size:26px;font-weight:700}
+.foot{color:var(--mut);font-size:12px;text-align:center;margin:8px 0 24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="steps" id="steps"><span class="on"></span><span></span><span></span></div>
+
+  <!-- Шаг 1: данные -->
+  <div class="card" id="s1">
+    <h1>Подписание договора</h1>
+    <p class="sub">Академия Сметного Дела · заполните данные: договор сформируется автоматически, подпишете его здесь же, за 2–3 минуты. Копия придёт на вашу почту.</p>
+    <form id="f" autocomplete="on" novalidate>
+      <label>ФИО полностью <span class="hint">как в паспорте</span></label>
+      <input id="fio" name="name" autocomplete="name" placeholder="Иванов Иван Иванович"><div class="errt" data-for="fio"></div>
+      <div class="row">
+        <div><label>E-mail <span class="hint">сюда придёт код и договор</span></label><input id="email" type="email" autocomplete="email" inputmode="email" placeholder="name@mail.ru"><div class="errt" data-for="email"></div></div>
+        <div><label>Телефон</label><input id="phone" type="tel" autocomplete="tel" placeholder="+7 900 000-00-00"><div class="errt" data-for="phone"></div></div>
+      </div>
+      <div class="row">
+        <div><label>ИНН <span class="hint">12 цифр</span></label><input id="inn" inputmode="numeric" maxlength="12" placeholder="123456789012"><div class="errt" data-for="inn"></div></div>
+        <div><label>СНИЛС <span class="hint">11 цифр</span></label><input id="snils" inputmode="numeric" maxlength="14" placeholder="123-456-789 01"><div class="errt" data-for="snils"></div></div>
+      </div>
+      <label>Паспорт <span class="hint">серия, номер, кем и когда выдан</span></label>
+      <input id="passport" placeholder="0822 813294 УМВД России по Хабаровскому краю 22.08.2022"><div class="errt" data-for="passport"></div>
+      <label>Адрес регистрации <span class="hint">с индексом</span></label>
+      <input id="address" autocomplete="street-address" placeholder="680012, г. Хабаровск, ул. Краснореченская, д. 1, кв. 1"><div class="errt" data-for="address"></div>
+      <label>Тариф</label>
+      <select id="tariff"></select><div class="errt" data-for="tariff"></div>
+      <input id="order" type="hidden">
+      <button type="submit" class="pri">Далее: проверить договор</button>
+    </form>
+  </div>
+
+  <!-- Шаг 2: договор, подпись, код -->
+  <div class="card hide" id="s2">
+    <h2>Проверьте договор</h2>
+    <div class="contract" id="contract"></div>
+    <h2 style="margin-top:18px">Ваша подпись</h2>
+    <p class="sub" style="margin-bottom:8px">Распишитесь пальцем или мышью в поле ниже.</p>
+    <canvas id="pad" width="800" height="340"></canvas>
+    <div style="margin-top:8px"><button class="sec" type="button" id="clear">Стереть подпись</button></div>
+    <label class="chk"><input type="checkbox" id="agree"><span>Я проверил(а) данные и условия договора, согласен(на) заключить договор и на обработку персональных данных</span></label>
+    <div class="msg err hide" id="e2"></div>
+    <button class="pri" id="sendCode" type="button">Получить код на почту</button>
+    <button class="sec" id="back1" type="button" style="width:100%;margin-top:8px">Исправить данные</button>
+  </div>
+
+  <!-- Шаг 3: код -->
+  <div class="card hide" id="s3">
+    <h2>Подтвердите e-mail</h2>
+    <p class="sub">Мы отправили 6-значный код на <b id="mailTo"></b>. Он нужен, чтобы подтвердить подпись и убедиться, что договор уйдёт на верный адрес. Проверьте и папку «Спам».</p>
+    <input id="code" class="code" inputmode="numeric" maxlength="6" placeholder="••••••" autocomplete="one-time-code">
+    <div class="msg err hide" id="e3"></div>
+    <button class="pri" id="sign" type="button">Подписать договор</button>
+    <button class="sec" id="resend" type="button" style="width:100%;margin-top:8px">Отправить код ещё раз / изменить e-mail</button>
+  </div>
+
+  <!-- Готово -->
+  <div class="card hide" id="s4" style="text-align:center">
+    <div class="big">✅</div>
+    <h2 id="doneT">Договор подписан</h2>
+    <p id="doneP" class="sub"></p>
+  </div>
+  <div class="foot">Академия Сметного Дела · подписание договоров онлайн</div>
+</div>
+
+<script src="contract_body.js"></script>
+<script src="config.js"></script>
+<script src="contract_core.js"></script>
+<script src="app_config.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var Q = new URLSearchParams(location.search);
+  var API = window.APP_CFG.API_URL;
+  if (Q.get('api') && /^(localhost|127\.0\.0\.1)$/.test(location.hostname)) API = Q.get('api'); // только для локальных тестов
+  var token = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random();
+  var data = null, busy = false;
+
+  // тарифы + предзаполнение из ссылки (?tariff=pro&order=55251632&email=..&fio=..)
+  var sel = $('tariff');
+  CONTRACT_CFG.tariffs.forEach(function (t) { var o = document.createElement('option'); o.value = t.id; o.textContent = t.name + ' — ' + ContractCore.fmtMoney(t.price) + ' ₽'; sel.appendChild(o); });
+  if (Q.get('tariff')) sel.value = Q.get('tariff');
+  ['fio','email','phone','inn','snils','passport','address'].forEach(function (k) { if (Q.get(k)) $(k).value = Q.get(k); });
+  $('order').value = (Q.get('order') || '').replace(/\D/g, '').slice(0, 12);
+
+  function step(n) {
+    ['s1','s2','s3','s4'].forEach(function (id, i) { $(id).classList.toggle('hide', i + 1 !== n); });
+    var sp = $('steps').children; for (var i = 0; i < 3; i++) sp[i].classList.toggle('on', i < Math.min(n, 3));
+    window.scrollTo(0, 0); notifyHeight();
+  }
+  function notifyHeight() { try { parent.postMessage({ type: 'asd-contract-height', h: document.documentElement.scrollHeight }, '*'); } catch (e) {} }
+  window.addEventListener('load', notifyHeight); new MutationObserver(notifyHeight).observe(document.body, { subtree: true, childList: true, attributes: true });
+
+  function digits(s) { return String(s).replace(/\D/g, ''); }
+  function validate() {
+    var v = {
+      fio: $('fio').value.trim().replace(/\s+/g, ' '), email: $('email').value.trim().toLowerCase(), phone: $('phone').value.trim(),
+      inn: digits($('inn').value), snils: digits($('snils').value), passport: $('passport').value.trim().replace(/\s+/g, ' '),
+      address: $('address').value.trim().replace(/\s+/g, ' '), tariff: $('tariff').value, order: $('order').value
+    };
+    var err = {};
+    if (v.fio.split(' ').length < 2 || v.fio.length < 5) err.fio = 'Укажите фамилию, имя и отчество полностью';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.email)) err.email = 'Проверьте e-mail';
+    if (digits(v.phone).length < 10) err.phone = 'Укажите телефон с кодом города/оператора';
+    if (v.inn.length !== 12) err.inn = 'ИНН физического лица — 12 цифр';
+    if (v.snils.length !== 11) err.snils = 'СНИЛС — 11 цифр';
+    if (v.passport.length < 20 || !/\d{4}\s?\d{6}/.test(v.passport)) err.passport = 'Серия (4 цифры), номер (6 цифр), кем и когда выдан';
+    if (v.address.length < 15) err.address = 'Укажите адрес полностью с индексом';
+    if (!v.tariff) err.tariff = 'Выберите тариф';
+    document.querySelectorAll('.errt').forEach(function (e) { var k = e.getAttribute('data-for'); e.textContent = err[k] || ''; var el = $(k); if (el) el.classList.toggle('bad', !!err[k]); });
+    return { v: v, ok: Object.keys(err).length === 0, first: Object.keys(err)[0] };
+  }
+  function tariffOf(id) { return CONTRACT_CFG.tariffs.filter(function (t) { return t.id === id; })[0]; }
+  function preview() {
+    var d = { number: '___________', date: new Date(), fio: data.fio, passport: data.passport, inn: data.inn, snils: data.snils, address: data.address, email: data.email, phone: data.phone, tariff: tariffOf(data.tariff), signature: null };
+    var html = ContractCore.buildHtml(d, CONTRACT_BODY, CONTRACT_CFG);
+    $('contract').innerHTML = html.replace(/^[\s\S]*<body>/, '').replace(/<\/body>[\s\S]*$/, '');
+  }
+
+  $('f').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var r = validate();
+    if (!r.ok) { $(r.first).focus(); return; }
+    data = r.v; preview(); clearPad(); step(2);
+  });
+  $('back1').onclick = function () { step(1); };
+
+  // --- подпись ---
+  var pad = $('pad'), ctx = pad.getContext('2d'), drawing = false, signed = false, last = null;
+  function clearPad() { ctx.clearRect(0, 0, pad.width, pad.height); signed = false; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#10265a'; }
+  function pos(ev) { var r = pad.getBoundingClientRect(); return { x: (ev.clientX - r.left) * pad.width / r.width, y: (ev.clientY - r.top) * pad.height / r.height }; }
+  pad.addEventListener('pointerdown', function (ev) { drawing = true; last = pos(ev); pad.setPointerCapture(ev.pointerId); ctx.beginPath(); ctx.arc(last.x, last.y, 2, 0, 7); ctx.fill(); signed = true; ev.preventDefault(); });
+  pad.addEventListener('pointermove', function (ev) { if (!drawing) return; var p = pos(ev); ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke(); last = p; ev.preventDefault(); });
+  ['pointerup', 'pointercancel'].forEach(function (n) { pad.addEventListener(n, function () { drawing = false; }); });
+  $('clear').onclick = clearPad; clearPad();
+  function signatureUrl() {
+    // обрезаем пустые поля и уменьшаем, чтобы PDF и письмо были лёгкими
+    var w = pad.width, h = pad.height, im = ctx.getImageData(0, 0, w, h).data, minX = w, minY = h, maxX = 0, maxY = 0;
+    for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) if (im[(y * w + x) * 4 + 3] > 20) { if (x < minX) minX = x; if (x > maxX) maxX = x; if (y < minY) minY = y; if (y > maxY) maxY = y; }
+    if (maxX <= minX || maxY <= minY) return null;
+    var cw = maxX - minX + 8, ch = maxY - minY + 8, c = document.createElement('canvas'), k = Math.min(1, 360 / cw);
+    c.width = Math.round(cw * k); c.height = Math.round(ch * k);
+    var cx = c.getContext('2d'); cx.drawImage(pad, Math.max(0, minX - 4), Math.max(0, minY - 4), cw, ch, 0, 0, c.width, c.height);
+    return c.toDataURL('image/png');
+  }
+
+  // --- сеть ---
+  function call(payload) {
+    if (!API) return Promise.reject(new Error('Сервис ещё не подключён (не указан адрес сервера).'));
+    return fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
+      .then(function (r) { return r.json(); })
+      .catch(function () { throw new Error('Не удалось связаться с сервером. Проверьте интернет и повторите.'); });
+  }
+  function show(id, text, cls) { var el = $(id); el.textContent = text || ''; el.className = 'msg ' + (cls || 'err') + (text ? '' : ' hide'); }
+  function lock(btn, on, label) { busy = on; btn.disabled = on; if (label) btn.textContent = label; }
+
+  $('sendCode').onclick = function () {
+    show('e2', '');
+    if (!signatureUrl()) return show('e2', 'Поставьте подпись в поле выше.');
+    if (!$('agree').checked) return show('e2', 'Отметьте согласие с условиями договора.');
+    if (busy) return;
+    var b = $('sendCode'); lock(b, true, 'Отправляем код…');
+    call({ action: 'sendCode', email: data.email, token: token }).then(function (r) {
+      if (!r.ok) throw new Error(r.msg || 'Не удалось отправить код.');
+      $('mailTo').textContent = data.email; $('code').value = ''; show('e3', ''); step(3); $('code').focus();
+    }).catch(function (e) { show('e2', e.message); }).then(function () { lock(b, false, 'Получить код на почту'); });
+  };
+  $('resend').onclick = function () { step(2); };
+  $('code').addEventListener('input', function () { this.value = digits(this.value).slice(0, 6); });
+
+  $('sign').onclick = function () {
+    show('e3', '');
+    var code = $('code').value;
+    if (code.length !== 6) return show('e3', 'Введите 6 цифр из письма.');
+    if (busy) return;
+    var b = $('sign'); lock(b, true, 'Подписываем, формируем PDF…');
+    var payload = { action: 'submit', token: token, code: code, data: data, signature: signatureUrl() };
+    call(payload).then(function (r) {
+      if (!r.ok) throw new Error(r.msg || 'Не удалось подписать договор.');
+      $('doneT').textContent = r.dup ? 'Договор уже был подписан' : 'Договор подписан';
+      $('doneP').textContent = (r.dup ? 'Мы повторно отправили копию на ' : 'Подписанный договор №' + r.number + ' отправлен на ') + data.email + '. Если письма нет — проверьте «Спам». Приступайте к обучению: договор уже у документоведа.';
+      step(4);
+    }).catch(function (e) { show('e3', e.message); lock(b, false, 'Подписать договор'); });
+  };
+})();
+</script>
+</body>
+</html>
