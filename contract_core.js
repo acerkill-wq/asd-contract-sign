@@ -76,7 +76,7 @@ var ContractCore = (function () {
     h.push('<html><head><meta charset="utf-8"><style>' + CSS + '</style></head><body>');
     h.push('<h1>Договор на оказание услуг по дистанционному обучению №' + esc(d.number) + '</h1>');
     h.push('<table><tr><td>г. Казань</td><td class="r">' + dateLong(dt) + '</td></tr></table>');
-    h.push('<p>Индивидуальный предприниматель ' + esc(e.name) + ', лицензия ' + esc(e.license) + ', именуемый в дальнейшем «Исполнитель», действующий на основании свидетельства с одной стороны, и Гражданка (-ин) РФ ' +
+    h.push('<p>' + esc(e.intro) + ' с одной стороны, и Гражданка (-ин) РФ ' +
       esc(d.fio) + ', (паспорт ' + esc(d.passport) + '), именуемая(-мый) в дальнейшем «Заказчик», совместно именуемые «Стороны», заключили настоящий Договор (далее — «Договор») о нижеследующем:</p>');
     for (var i = 0; i < body.length; i++) {
       var t = body[i];
@@ -84,9 +84,10 @@ var ContractCore = (function () {
       else h.push('<p>' + esc(fill(t, d)) + '</p>');
     }
     h.push('<h2>12. РЕКВИЗИТЫ И ПОДПИСИ СТОРОН</h2>');
-    h.push('<table><tr><td width="50%"><b>ИСПОЛНИТЕЛЬ:</b><br>ИП ' + esc(e.name) + '<br>ИНН: ' + esc(e.inn) + '<br>Реквизиты банка:<br>Счёт №: ' + esc(e.account) +
-      '<br>Название: ' + esc(e.bank) + '<br>БИК: ' + esc(e.bik) + '<br>Корр. счёт: ' + esc(e.corr) + '<br>Адрес: ' + esc(e.address) + '<br>Электронная почта: ' + esc(e.email) +
-      '<div class="sig">' + (cfg.executorSignature ? '<img src="' + cfg.executorSignature + '" height="55">' : '') + '</div>Подпись ___________________/' + esc(e.short) + '/<br>М.П.</td>');
+    var stamp = cfg.executorStamp ? '<img src="' + cfg.executorStamp + '" height="90" style="margin-left:-6px">' : '';
+    var xsig = cfg.executorSignature ? '<img src="' + cfg.executorSignature + '" height="45">' : '';
+    h.push('<table><tr><td width="50%"><b>ИСПОЛНИТЕЛЬ:</b><br>' + e.lines.map(esc).join('<br>') +
+      '<div class="sig" style="height:95px">' + xsig + stamp + '</div>Подпись ___________________/' + esc(e.short) + '/<br>М.П.</td>');
     h.push('<td width="50%"><b>ЗАКАЗЧИК:</b><br>Гражданка (-ин) РФ<br>' + esc(d.fio) + '<br>ИНН: ' + esc(d.inn) + '<br>СНИЛС: ' + esc(d.snils) + '<br>Паспорт: ' + esc(d.passport) +
       '<br>Адрес: ' + esc(d.address) + '<br>Электронная почта: ' + esc(d.email) + '<br>Телефон: ' + esc(d.phone) +
       '<div class="sig">' + (d.signature ? '<img src="' + d.signature + '" height="55">' : '') + '</div>Подпись_____________/' + esc(shortName(d.fio)) + '/</td></tr></table>');
@@ -95,7 +96,7 @@ var ContractCore = (function () {
     h.push('<h1>ПЕРЕЧЕНЬ УСЛУГ</h1><table class="bd"><tr><th>№ п/п</th><th>Наименование</th><th>Длительность обучения, ак. час.</th><th>Сроки проведения обучения</th><th>Цена, руб.</th><th>Кол-во</th><th>Сумма, руб.</th></tr>');
     h.push('<tr><td>1</td><td>' + esc(d.tariff.name) + '</td><td>' + esc(d.tariff.hours) + '</td><td>С ' + dateShort(from) + ' г. по ' + dateShort(to) + ' г.</td><td>' + fmtMoney(d.tariff.price) + '</td><td>1</td><td>' + fmtMoney(d.tariff.price) + '</td></tr>');
     h.push('<tr><td colspan="6" class="r"><b>ИТОГО:</b><br>(НДС не облагается)</td><td>' + fmtMoney(d.tariff.price) + '</td></tr></table>');
-    h.push('<table style="margin-top:20px"><tr><td width="50%"><b>ОТ ИСПОЛНИТЕЛЯ</b><br><br>/' + esc(e.short) + '/</td><td><b>ОТ ЗАКАЗЧИКА</b><br><br>' +
+    h.push('<table style="margin-top:20px"><tr><td width="50%"><b>ОТ ИСПОЛНИТЕЛЯ</b><br>' + (cfg.executorSignature ? '<img src="' + cfg.executorSignature + '" height="45"><br>' : '<br>') + '/' + esc(e.short) + '/</td><td><b>ОТ ЗАКАЗЧИКА</b><br><br>' +
       (d.signature ? '<img src="' + d.signature + '" height="45"><br>' : '') + '_____________/' + esc(shortName(d.fio)) + '/</td></tr></table>');
     if (d.proof) h.push('<div class="esign">' + esc(d.proof) + '</div>');
     h.push('</body></html>');
